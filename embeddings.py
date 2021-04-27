@@ -1,4 +1,5 @@
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 import numpy as np
 import time
 import datetime
@@ -20,6 +21,8 @@ X_full = np.load("data/X_train.npy")
 n = X_full.shape[0]
 d_max = X_full.shape[1]
 
+scaler = StandardScaler().fit(X_full)
+
 pca = PCA(n_components=d_max)
 
 # Subset.
@@ -30,7 +33,7 @@ X = X_full[idx[0:n], :]
 # Fit on training data and time.
 
 tic = time.time()
-pca.fit(X)
+pca.fit(scaler.transform(X))
 toc = time.time()
 
 print("Fit time: {:}.".format(format_time(toc - tic)))
@@ -49,21 +52,21 @@ for i, var in enumerate(pca.explained_variance_ratio_):
 
 # Apply to validation and test data.
 
-pca = PCA(n_components=n_components).fit(X_full)
+pca = PCA(n_components=n_components).fit(scaler.transform(X))
 
 tic = time.time()
 
-Z_train = pca.transform(X)
-Z_val = pca.transform(np.load("data/X_val.npy"))
-Z_test = pca.transform(np.load("data/X_test.npy"))
+Z_train = pca.transform(scaler.transform(X_full))
+Z_val = pca.transform(scaler.transform(np.load("data/X_val.npy")))
+Z_test = pca.transform(scaler.transform(np.load("data/X_test.npy")))
 
 toc = time.time()
 
-with open("Z_train.npy", "wb") as f:
+with open("data/Z_train.npy", "wb") as f:
     np.save(f, Z_train)
-with open("Z_val.npy", "wb") as f:
+with open("data/Z_val.npy", "wb") as f:
     np.save(f, Z_val)
-with open("Z_test.npy", "wb") as f:
+with open("data/Z_test.npy", "wb") as f:
     np.save(f, Z_test)
 
 print("Transform time: {:}.".format(format_time(toc - tic)))
