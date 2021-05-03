@@ -41,7 +41,7 @@ print("Fit time: {:}.".format(format_time(toc - tic)))
 cumulative = 0
 for i, var in enumerate(pca.explained_variance_ratio_):
     cumulative += var
-    if cumulative > 0.95:
+    if cumulative > 0.90:
         print(
             "%0.3f percent of variance explained by first %d dimensions."
             % (cumulative, i)
